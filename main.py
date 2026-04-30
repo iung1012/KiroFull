@@ -254,8 +254,10 @@ app.include_router(anthropic_router)  # /v1/messages
 
 # ── SPA static files (must be last) ──────────────────────────────────────────
 _static_dir = os.path.join(os.path.dirname(__file__), "static")
+_assets_dir = os.path.join(_static_dir, "assets")
 if os.path.isdir(_static_dir):
-    app.mount("/assets", StaticFiles(directory=os.path.join(_static_dir, "assets")), name="assets")
+    os.makedirs(_assets_dir, exist_ok=True)
+    app.mount("/assets", StaticFiles(directory=_assets_dir), name="assets")
 
     @app.get("/{full_path:path}", include_in_schema=False)
     def spa_fallback(full_path: str):
