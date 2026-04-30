@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: kiro-suite
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: standard
+    healthCheckPath: /health
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: APP_CONDA_ENV
+        value: docker
+      - key: APP_RUNTIME_DIR
+        value: /data/runtime
+      - key: APP_ENABLE_SOLVER
+        value: "0"
+      - key: KIRO_REGION
+        value: us-east-1
+      - key: LOG_LEVEL
+        value: INFO
+      - key: GATEWAY_API_KEY
+        sync: false
+      - key: GATEWAY_CREDS_FILE
+        value: /data/runtime/gateway_credentials.json
+    disk:
+      name: kiro-data
+      mountPath: /data
+      sizeGB: 1

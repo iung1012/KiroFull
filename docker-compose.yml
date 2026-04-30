@@ -1,0 +1,41 @@
+services:
+
+  kiro-suite:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        CAMOUFOX_VERSION: ${CAMOUFOX_VERSION:-135.0.1}
+        CAMOUFOX_RELEASE: ${CAMOUFOX_RELEASE:-beta.24}
+    container_name: kiro-suite
+    init: true
+    restart: unless-stopped
+    environment:
+      HOST: 0.0.0.0
+      PORT: "8000"
+      APP_RELOAD: "0"
+      APP_CONDA_ENV: docker
+      APP_RUNTIME_DIR: /runtime
+      APP_ENABLE_SOLVER: "1"
+      SOLVER_PORT: "8889"
+      SOLVER_BIND_HOST: 0.0.0.0
+      LOCAL_SOLVER_URL: http://127.0.0.1:8889
+      SOLVER_BROWSER_TYPE: ${SOLVER_BROWSER_TYPE:-camoufox}
+      PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS:-}
+      PROXY_API_KEY: ${GATEWAY_API_KEY:-change-me-in-env}
+      KIRO_REGION: ${KIRO_REGION:-us-east-1}
+      GATEWAY_CREDS_FILE: /runtime/gateway_credentials.json
+      ACCOUNT_SYSTEM: "true"
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    ports:
+      - "8000:8000"
+      - "127.0.0.1:8889:8889"
+    volumes:
+      - ${APP_RUNTIME_BIND:-./data}:/runtime
+    shm_size: "1gb"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
